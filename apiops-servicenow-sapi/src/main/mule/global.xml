@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:servicenow="http://www.mulesoft.org/schema/mule/servicenow"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/servicenow http://www.mulesoft.org/schema/mule/servicenow/current/mule-servicenow.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
+	<http:listener-config name="httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="${http.port}" />
+    </http:listener-config>
+    <apikit:config name="servicenow-system-api-config" api="servicenow-system-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+   
+	<servicenow:config name="servicenowConfig" doc:name="ServiceNow Config" doc:id="6d9986ab-0480-4f2b-a9a2-a13cf4b2249a" >
+		<servicenow:basic-connection username="${servicenow.username}" password="${secure::servicenow.password}" serviceAddress="${servicenow.address}">
+			<servicenow:transport >
+				<servicenow:basic-auth-http-message-dispatcher-provider username="${servicenow.username}" password="${secure::servicenow.password}" />
+			</servicenow:transport>
+		</servicenow:basic-connection>
+	</servicenow:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="85f73ec7-0602-4b78-9cca-0762a5ec6207" file="servicenow-system-api-${env}.yaml" />
+	<global-property doc:name="Global Property" doc:id="288dd89c-10a1-4368-b6f1-e8715a70a112" name="env" value="dev" />
+	<configuration doc:name="Configuration" doc:id="8361ff02-ead7-4f14-b158-451feda48aed" defaultErrorHandler-ref="globalErrorHandler" />
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="b76ab183-6734-4f45-8904-401cf32fc83d" file="servicenow-system-api-dev.yaml" key="${key}">
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	<error-handler name="globalErrorHandler" doc:id="0fd0f21c-c4ba-42b0-a1c5-3b0af34611ce" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="2d5fb788-745a-4350-815b-89f6a48a0f59" type="SERVICENOW:CONNECTIVITY">
+			<set-variable value="500" doc:name="httpStatus" doc:id="61b943bd-197a-43cf-905c-dee27e9575a7" variableName="httpStatus"/>
+			<flow-ref doc:name="error-message-flow" doc:id="e475e7a8-03f2-4078-9794-e08647b548e2" name="error-message-flow"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="e4b96f56-58e5-4b32-ad91-24f3edada944" type="SERVICENOW:BAD_REQUEST">
+			<set-variable value="400" doc:name="httpStatus" doc:id="7cb75bb0-7929-49c5-ba3e-504ee40a1e1d" variableName="httpStatus"/>
+			<flow-ref doc:name="error-message-flow" doc:id="8bed8e8a-b7c6-4b53-a631-7289af08c7e6" name="error-message-flow"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="c4273889-96d1-425a-ae0c-1837c6f7fac3" type="ANY">
+			<set-variable value="500" doc:name="httpStatus" doc:id="c6190edd-2552-4385-a5ff-fb21b6f73d37" variableName="httpStatus"/>
+			<flow-ref doc:name="error-message-flow" doc:id="ad5eb7f5-31f3-4dd1-952f-d7e8e8d2b528" name="error-message-flow"/>
+		</on-error-propagate>
+	</error-handler>
+	<flow name="error-message-flow" doc:id="2f73f179-dc70-4f17-b2ba-e4e62252fcf1" >
+		<ee:transform doc:name="Transform Message" doc:id="6fe8aa31-84fe-4ef1-9c95-8b230887a322" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	statusCode: vars.httpStatus,
+	errorType: error.errorType.asString,
+	description: error.description
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

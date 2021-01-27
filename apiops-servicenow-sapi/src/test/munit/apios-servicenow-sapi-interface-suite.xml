@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="servicenow-system-api-interface-suite.xml" />
+	<munit:test name="post:\incidents:application\json:apiops-servicenow-sapi-config-test" doc:id="784d247d-78c7-4cef-91ee-25678b1120ed" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock servicenow-create-incident-flow" doc:id="6658db89-2dfc-4080-9bc1-b64327f4cce9" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="servicenow-create-incident-flow" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://postincidentsapplicationjsonservicenowsystemapiconfigtest/mock_payload.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:attributes value="#[readUrl('classpath://postincidentsapplicationjsonservicenowsystemapiconfigtest/mock_attributes.dwl')]" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://postincidentsapplicationjsonservicenowsystemapiconfigtest/mock_variable_.dwl')]" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="8a37a4f1-2b2a-4b8b-ab35-8bfe02daaa96" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://postincidentsapplicationjsonservicenowsystemapiconfigtest/set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://postincidentsapplicationjsonservicenowsystemapiconfigtest/set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://postincidentsapplicationjsonservicenowsystemapiconfigtest/set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\incidents:application\json:apiops-servicenow-sapi-main-config" doc:id="da73d29e-4402-4b5f-ad26-30d92833fad6" name="post:\incidents:application\json:apiops-servicenow-sapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="27f6937e-2028-4b28-872b-569ab3f29bac" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import postincidentsapplicationjsonservicenowsystemapiconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="apiops-servicenow-sapi-console-test" doc:id="6355540a-b444-4417-9d46-c4f88601bc4e" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock APIkit Console" doc:id="984f189e-cb30-43d3-b2b0-d55b27d25d8b" processor="apikit:console">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="apiops-servicenow-sapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/dw --- readUrl('classpath://servicenowsystemapiconsoletest/mock_payload.dwl')]" mediaType="application/dw" />
+					<munit-tools:attributes value="#[readUrl('classpath://servicenowsystemapiconsoletest/mock_attributes.dwl')]" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://servicenowsystemapiconsoletest/mock_variable_.dwl')]" />
+						<munit-tools:variable key="httpStatus" value="#[readUrl('classpath://servicenowsystemapiconsoletest/mock_variable_1.dwl')]" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="9b16705c-a4dd-423b-a8c6-e5d9d8f33709" >
+				<munit:payload value="#[readUrl('classpath://servicenowsystemapiconsoletest/set-event_payload.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://servicenowsystemapiconsoletest/set-event_attributes.dwl')]" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to apiops-servicenow-sapi-main" doc:id="59c8eeb9-6433-4d08-a0a8-acefde5da825" name="apiops-servicenow-sapi-console"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="1e9d059a-cf42-4859-87dc-fb2e0417d9e1" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import servicenowsystemapiconsoletest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="apiops-servicenow-sapi-main-test" doc:id="d9226472-2673-417a-8074-8c7cde4a75a6" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock APIkit Router" doc:id="3bd31eda-a3b1-4959-9831-c1313ab07301" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="apiops-servicenow-sapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://servicenowsystemapimaintest/mock_payload.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:attributes value="#[readUrl('classpath://servicenowsystemapimaintest/mock_attributes.dwl')]" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://servicenowsystemapimaintest/mock_variable_.dwl')]" />
+						<munit-tools:variable key="httpStatus" value="#[readUrl('classpath://servicenowsystemapimaintest/mock_variable_1.dwl')]" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="39154490-1c7d-4242-9f16-0bc0aef47cde" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://servicenowsystemapimaintest/set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://servicenowsystemapimaintest/set-event_attributes.dwl')]" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to apiops-servicenow-sapi-main" doc:id="25eb4073-cd17-48a2-ad4d-c007f7bf72c2" name="apiops-servicenow-sapi-main"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="66814718-bbc0-4df9-8ea4-a4eaf0de832e" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import servicenowsystemapimaintest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+
+</mule>

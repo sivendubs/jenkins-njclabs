@@ -1,0 +1,45 @@
+#%RAML 1.0
+title: apiops-salesforce-sapi
+version: v1
+
+traits:
+  jwt:
+    headers:
+      authorization:
+        description: Bearer 
+        type: string
+    responses:
+      400:
+        description: Token was not provided.
+      401:
+        description: Bad or expired token. To fix, you should re-authenticate the user.
+      403:
+        description: The client id validation failed.
+      503:
+        description: Error communicating with JWKS server.  
+  error-responses: !include resources/traits/error-responses-trait.raml
+types:
+  Account: !include /resources/datatypes/account-details-datatype.raml
+/accounts:
+  get:
+    is: [jwt,error-responses]
+    responses:
+      200:
+        body:
+          application/json:
+            type: Account[]
+            example: !include /resources/examples/multiple-accounts-example.json
+    
+  /{accountId}:
+    get:
+      responses:
+        200:
+          body:
+            application/json:
+              type: Account
+              example: !include /resources/examples/single-account-example.json
+      is:
+        - error-responses
+        - jwt
+
+              

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:servicenow="http://www.mulesoft.org/schema/mule/servicenow"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/servicenow http://www.mulesoft.org/schema/mule/servicenow/current/mule-servicenow.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="servicenow-create-incident-flow" doc:id="a45ef70e-5144-4108-8ef5-b3529ccf5a7b" >
+		<ee:transform doc:name="Transform to XML" doc:id="b20c9b3d-d373-40e6-ab5e-576a8ee8a72a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://www.service-now.com/incident
+---
+{
+	ns0#insert: {
+		description: message.payload.errorDescription,
+		parent: message.payload.errorType,
+		short_description: message.payload.errorDescription
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logging Payload" doc:id="5a176f62-b559-43d8-bf5b-178cc026c411" message="#[payload]"/>
+		<servicenow:invoke doc:name="Invoke" doc:id="5a388f5a-ba71-4069-8178-c369b62f739d" config-ref="servicenowConfig" service="incident" operation="insert"/>
+		<logger level="INFO" doc:name="Logging Payload after Invoking" doc:id="23e6b9d9-9d5c-40a4-973d-7f321c076f17" message="#[payload]"/>
+		<ee:transform doc:name="Payload to JSON" doc:id="825a5c6b-ad65-4e7f-8b28-8c4359564e13" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.body]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logging Payload" doc:id="ceb6acac-a3c8-426d-9e28-f250d04312dc" message="#[payload]"/>
+	
+</flow>
+</mule>

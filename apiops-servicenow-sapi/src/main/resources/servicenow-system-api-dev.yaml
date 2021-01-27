@@ -1,0 +1,7 @@
+servicenow:
+  username: "admin"
+  password: "![kKYs08aqMGmnD73HlK98KQ==]"
+  address: "https://dev56955.service-now.com/"
+  
+http:
+  port: '8081'  

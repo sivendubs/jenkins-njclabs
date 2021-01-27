@@ -1,0 +1,50 @@
+#%RAML 1.0 DataType
+description: create account datatype
+type: object
+properties:
+  accountId:
+    description: Account ID
+    type: string
+    required: false
+  tradingName:
+    type: string
+    required: false
+  accountNumber:
+    type: string
+    required: false
+  industry:
+    type: string
+    required: false
+  contacts:
+    type: array
+    required: false
+    items:
+      properties:
+        firstName: 
+          type: string
+          required: false
+        lastName:
+          type: string
+          required: false
+        title:
+          type: string
+          required: false
+        email:
+          type: string
+          required: false
+        phone:
+          type: string
+          required: false
+  links:
+    type: array
+    required: false
+    items:
+      properties:
+        rel:
+          type: string
+          required: false
+        href:
+          type: string
+          required: false
+        
+    

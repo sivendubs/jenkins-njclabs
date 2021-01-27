@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="servicenow-system-api-interface-test-suite.xml" />
+	<munit:test name="apiops-servicenow-sapi-interface-test-bad-request" doc:id="755caa45-e243-466a-9488-6ca9190999f9" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="d1947e74-4aa2-45c4-8d5e-34112ffbabca" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="apiops-servicenow-sapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:BAD_REQUEST" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="f56c9e61-75fd-4726-94b3-8d1884c4eb05" >
+				<flow-ref doc:name="Flow-ref to apiops-servicenow-sapi-main" doc:id="79b362aa-60f9-494e-a255-216621da8321" name="apiops-servicenow-sapi-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="bc1fe237-192f-43e8-95c8-28d421b31b86" >
+						<logger level="INFO" doc:name="error" doc:id="a3449ff4-0c6c-4ab4-b616-df7e0f745b9e" message="#[payload]" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="4b304c38-d2c9-408f-8b88-cb36f56bc333" actual="#[payload.message]" expected="Bad request" message="Invalid Message"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="apiops-servicenow-sapi-interface-test-not-found" doc:id="9efd883e-0f51-4b1a-b847-a3a390314bb8" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="f9ab77d1-53ac-4316-b1e7-3c2b5246949e" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="apiops-servicenow-sapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_FOUND" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="1ae2459d-1311-45a8-acb3-baa93bf35e82" >
+				<flow-ref doc:name="Flow-ref to servicenow-system-api-main" doc:id="4d2d6fa0-dc0a-4e16-abd3-d5aa581fedbd" name="apiops-servicenow-sapi-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="31c40d3f-f69b-4e32-9a8e-8ef933605774" >
+						<logger level="INFO" doc:name="error" doc:id="3546af89-34ae-4943-a98c-7e475446efab" message="#[payload]" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="c8351256-ab97-42e0-b9f7-f5c33cc9f10e" actual="#[payload.message]" expected="Resource not found" message="Invalid Message"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="apiops-servicenow-sapi-interface-test-method-not-allowed" doc:id="5596a58e-56c7-4612-8f70-f88e1297bc5b" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="6d9a03b0-3615-4bdb-a0a7-498642f3db04" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="apiops-servicenow-sapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:METHOD_NOT_ALLOWED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="7f00778b-e666-4f7d-9920-6e0cc3823066" >
+				<flow-ref doc:name="Flow-ref to apiops-servicenow-sapi-main" doc:id="e2e522f6-8ca3-4042-9621-426284cc9298" name="apiops-servicenow-sapi-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="cbfb2ce8-98fe-4441-a28c-76f852bc89ab" >
+						<logger level="INFO" doc:name="error" doc:id="a80b5306-9492-4b8d-87bb-2d2bbfb9b63c" message="#[payload]" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="36ee36f9-61be-425f-98a4-46ab0ec51609" actual="#[payload.message]" expected="Method not allowed" message="Invalid Message"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="apiops-servicenow-sapi-interface-test-not-acceptable" doc:id="2944566a-980b-4324-b4e3-a8ba48b6f129" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="e00f50fb-6c2c-46b5-8af7-e6b26b01228c" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="apiops-servicenow-sapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_ACCEPTABLE" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="3de96cf6-42bf-4b49-b557-50f54dffdcc2" >
+				<flow-ref doc:name="Flow-ref to apiops-servicenow-sapi-main" doc:id="7a9b486c-2555-4b16-ba31-2582e1b2ce6b" name="apiops-servicenow-sapi-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="8749801c-fd58-4213-97d6-386b91d4102d" >
+						<logger level="INFO" doc:name="error" doc:id="29d02a5f-e819-400c-95e1-c05e782addab" message="#[payload]" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="31a14fdd-5cb8-421b-a030-23c45b863317" actual="#[payload.message]" message="Invalid Message" expected="Not acceptable"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="apiops-servicenow-sapi-test-unsupported-mediatype" doc:id="4557a305-a130-4980-abd4-9bc56dafdcf1" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="5b2a47fb-5a25-4ebd-a339-67c7b00e9ab6" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="apiops-servicenow-sapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:UNSUPPORTED_MEDIA_TYPE" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="99b53dfe-64a6-43de-873c-1ce89454ad84" >
+				<flow-ref doc:name="Flow-ref to apiops-servicenow-sapi-main" doc:id="862a153e-b7d7-421a-998a-d940da4f3757" name="apiops-servicenow-sapi-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="20f1cc7e-2a06-4a94-92b9-e91d4614eade" >
+						<logger level="INFO" doc:name="error" doc:id="de27ae7d-a1ed-4d55-8d66-5b4971963168" message="#[payload]"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="175fea9c-5ef8-416c-9779-24eb57c13879" actual="#[payload.message]" message="Invalid Message" expected="Unsupported media type"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="apiops-servicenow-sapi-interface-test-not-implemented" doc:id="3d0daa87-338d-44e5-8ddf-28776be549f3" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="d7ebbe80-2516-4251-b5d5-a4a2b46d40ae" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="apiops-servicenow-sapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_IMPLEMENTED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="44fdfb41-6774-4ec8-a6ee-9b7217137102" >
+				<flow-ref doc:name="Flow-ref to apiops-servicenow-sapi-main" doc:id="6ddae58f-2692-4509-b8b3-fb8a4768b05a" name="apiops-servicenow-sapi-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="c2447382-6287-4aa6-a98f-f5412bdb2214" >
+						<logger level="INFO" doc:name="error" doc:id="ab661596-9123-4c6e-bacd-087f165f7981" message="#[payload]" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="9e3af030-bd75-41a4-adae-5d2c49ff70ad" actual="#[payload.message]" expected="Not Implemented" message="Invalid Message"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="apiops-servicenow-sapi-interface-test-console-not-found" doc:id="8516660f-387f-4dbb-9bf3-de1f987a83fb" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="d6fa0967-18fb-42b3-99c2-526a4947a94d" processor="apikit:console">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="apiops-servicenow-sapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_FOUND" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="88b97b52-843e-4a62-9ab4-74d00e5dc79a" >
+				<flow-ref doc:name="Flow-ref to servicenow-system-api-console" doc:id="585a5d15-9303-48fe-9a64-215c6d7d6f10" name="apiops-servicenow-sapi-console" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="a5e1ea7c-4f4e-4e77-9ff1-ea5df2a0e43a" >
+						<logger level="INFO" doc:name="error" doc:id="c4d8c7c8-ed4d-4a59-8109-8885e51f22ad" message="#[payload]" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="f6c1cc1f-fe9e-4510-a8fc-0121fd75c29c" actual="#[payload.message]" expected="Resource not found" message="invalid message"/>
+		</munit:validation>
+	</munit:test>
+
+</mule>

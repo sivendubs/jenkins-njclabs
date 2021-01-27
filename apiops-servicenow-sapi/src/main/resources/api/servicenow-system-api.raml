@@ -1,0 +1,32 @@
+#%RAML 1.0
+title: servicenow-system-api
+
+types:
+  incidentData: !include Datatype/incident-datatype.raml
+
+/incidents:
+  description: Adding new incident details in servicenow for System Errors
+  post:
+    description: Creating new incident
+    body:
+      application/json:
+        type: incidentData
+    responses:
+      201:
+        description: Succes
+        body:
+          application/json:
+            example:
+              message: Added new Incident details
+      400:
+        description: Error
+        body:
+          application/json:
+            example:
+              message: Error in adding new incident   
+      500:
+        description: Server error
+        body:
+          application/json:
+            example:
+              message: Server Error  

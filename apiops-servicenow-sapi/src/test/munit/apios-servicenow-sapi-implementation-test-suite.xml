@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="servicenow-system-api-implementation-test-suite.xml" />
+	<munit:test name="servicenow-system-api-implementation-test-connectivity" doc:id="b09bbc43-cbaf-44ee-9340-dc0be4b294ae" description="Test">
+		<munit:behavior >
+			<munit:set-event doc:name="Set Event" doc:id="f53ed988-45c3-4f1b-a12b-d04b299260aa" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://examples/input-payload.dwl')]" mediaType="application/json" />
+			</munit:set-event>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="5b9913e9-0377-497e-8a20-dd55cfcd3078" processor="servicenow:invoke">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Invoke" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="SERVICENOW:CONNECTIVITY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="40827230-5b95-4767-b033-f1ae23cc4029" >
+				<flow-ref doc:name="Flow-ref to servicenow-create-incident-flow" doc:id="b64da504-fabd-41ea-af75-26deda9c5e8d" name="servicenow-create-incident-flow" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="f404b05b-d9d1-45cf-876e-00eec79e634c" >
+						<logger level="INFO" doc:name="error" doc:id="6850bbc1-f342-45d6-80d2-12af36f11b02" message="#[payload]"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="da368b0d-be94-45ac-bc2e-eb4d0a1e08a0" actual="#[payload.statusCode]" expected="500" message="Invalid Status Code"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="servicenow-system-api-implementation-test-bad-request" doc:id="02d11aec-137f-4597-accf-f9ef3af7a061" description="Test">
+		<munit:behavior >
+			<munit:set-event doc:name="Set Event" doc:id="bf20c614-20f3-4cb0-9c6d-254fb607abae" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://examples/input-payload.dwl')]" mediaType="application/json" />
+			</munit:set-event>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="9bf909e1-3f4e-4aff-8330-67cbc76efe2e" processor="servicenow:invoke" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Invoke" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="SERVICENOW:BAD_REQUEST" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="37b4f066-f99c-4ca3-a192-29863f4234d4" >
+				<flow-ref doc:name="Flow-ref to servicenow-create-incident-flow" doc:id="4f0a61c0-5230-4ac2-b386-fc04ca9ed0ee" name="servicenow-create-incident-flow" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="d37aff9c-a0bd-4526-b115-5c56d17eeeb8" >
+						<logger level="INFO" doc:name="error" doc:id="2375279e-c464-45c3-9da9-23da332b6637" message="#[payload]" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="d9e512fc-770c-4f08-9690-4943fe34d4a7" actual="#[payload.statusCode]" expected="400" message="Invalid Status Code" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="servicenow-system-api-implementation-test-error" doc:id="111a1583-78fe-4051-b910-cf3a08727b32" description="Test">
+		<munit:behavior >
+			<munit:set-event doc:name="Set Event" doc:id="31e0dd8d-9271-46ca-aadb-a1970bb08fb7" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://examples/input-payload.dwl')]" mediaType="application/json" />
+			</munit:set-event>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="853dad40-73f2-4307-9541-b660ad0184ec" processor="servicenow:invoke" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Invoke" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="SERVICENOW:TIMEOUT" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="6f5eefda-c8a1-4b6c-ab06-f1e6b04d57a5" >
+				<flow-ref doc:name="Flow-ref to servicenow-create-incident-flow" doc:id="f2631257-d163-4340-89a0-166d95be1e82" name="servicenow-create-incident-flow" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="560394cb-1c48-408e-9547-4a47f78f1855" >
+						<logger level="INFO" doc:name="error" doc:id="112b87fc-cab1-464e-961b-a7e218ff604f" message="#[payload]" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="18c63ab7-d086-45ba-944f-f183593207e7" actual="#[payload.statusCode]" expected="500" message="Invalid Status Code" />
+		</munit:validation>
+	</munit:test>
+
+</mule>
